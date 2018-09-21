@@ -8,11 +8,13 @@
   },
   "dependencies": {
     "apollo-client-preset": "^1.0.8",
+    "apollo-link-ws": "^1.0.9",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.9.2",
     "react": "16.5.0",
     "react-apollo": "^2.1.11",
-    "react-native": "0.57.0"
+    "react-native": "0.57.0",
+    "subscriptions-transport-ws": "^0.9.15"
   },
   "devDependencies": {
     "babel-eslint": "^9.0.0",

@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { ApolloProvider } from 'react-apollo';
-import { ApolloClient, HttpLink, InMemoryCache } from 'apollo-client-preset';
-import ItemListWrapper from './components/ItemListWrapper';
-import config from './config';
+import React, { Component } from "react";
+import { ApolloProvider } from "react-apollo";
+import { ApolloClient, HttpLink, InMemoryCache } from "apollo-client-preset";
+import ItemListWrapper from "./components/ItemListWrapper";
+import config from "./config";
 
 
 const httpLink = new HttpLink({ uri: config.httpApiEndpoint});

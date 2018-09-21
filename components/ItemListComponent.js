@@ -1,18 +1,29 @@
 import React, { Component } from "react";
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
-import { Query } from "react-apollo";
+
 import Item from "./Item";
 import ItemAddButton from "./ItemAddButton";
-import LoadingScreen from "./LoadingScreen";
-import EditingItem from "./EditingItem";
 
-import { FETCH_ITEMS } from "./queries";
+import EditingItem from "./EditingItem";
 
 export default class ItemListComponent extends Component {
 
-  state = {
-    newItemText: "",
-    itemNameToEdit: null
+  constructor(props) {
+    super(props);
+    const { fetchedData } = this.props;
+
+    this.state = {
+      newItemText: "",
+      itemToEdit: null,
+      fetchedData
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    const { fetchedData } = this.props;
+    if (fetchedData.length !== prevProps.fetchedData.length) {
+      this.setState({ fetchedData: fetchedData });
+    }
   }
 
   handleNewItemTextChange = (newItemText) => {
@@ -34,49 +45,40 @@ export default class ItemListComponent extends Component {
   }
 
   render() {
+    const { fetchedData, newItemText, itemToEdit } = this.state;
     return (
-      <Query query={FETCH_ITEMS}>
-        {({ loading, error, data }) => {
-          if (loading) {
-            return <LoadingScreen/>;
+      <View style={styles.wrapper}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>WATS MISSING?</Text>
+        </View>
+        <TextInput
+          style={styles.newItemInput}
+          onChangeText={this.handleNewItemTextChange}
+          value={newItemText}
+          placeholder="Enter item name"
+          underlineColorAndroid="transparent"
+        />
+        <ItemAddButton itemName={newItemText}/>
+        {
+          itemToEdit ?
+            <EditingItem
+              onItemDeletion={this.onItemDeletion}
+              itemToEdit={itemToEdit}
+            /> : null
+        }
+        <FlatList
+          data={fetchedData}
+          keyExtractor={(item) => item.id}
+          renderItem={({item}) =>
+            <Item
+              key={item.id}
+              onItemPressed={() => {}}
+              item={item}
+              prepareItemForEditing={this.prepareItemForEditing}
+            />
           }
-          if (error) {
-            return error.message;
-          }
-
-          return (
-            <View style={styles.wrapper}>
-              <View style={styles.header}>
-                <Text style={styles.headerText}>WATS MISSING?</Text>
-              </View>
-              <TextInput
-                style={styles.newItemInput}
-                onChangeText={this.handleNewItemTextChange}
-                value={this.state.newItemText}
-                placeholder="Enter item name"
-                underlineColorAndroid="transparent"
-              />
-              <ItemAddButton itemName={this.state.newItemText}/>
-              {
-                this.state.itemToEdit ?
-                  <EditingItem onItemDeletion={this.onItemDeletion} itemToEdit={this.state.itemToEdit}/> :
-                  null
-              }
-              <FlatList
-                data={data.allItems}
-                keyExtractor={(item) => item.id}
-                renderItem={({item}) =>
-                  <Item
-                    key={item.id}
-                    onItemPressed={() => {}}
-                    item={item}
-                    prepareItemForEditing={this.prepareItemForEditing}
-                  />}
-              />
-            </View>
-          );
-        }}
-      </Query>
+        />
+      </View>
     );
   }
 }

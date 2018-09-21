@@ -3,17 +3,19 @@ import { Text, TouchableOpacity, StyleSheet } from "react-native";
 
 export default class Item extends Component {
   handlePress = () => {
-    this.props.prepareItemForEditing(this.props.item);
+    const { item, prepareItemForEditing } = this.props;
+    prepareItemForEditing(item);
   }
   
   render() {
+    const { item } = this.props;
     return (
       <TouchableOpacity 
         onPress={this.handlePress}
         style={styles.item}
       >
         <Text 
-          style={styles.itemText}>{this.props.item.name}
+          style={styles.itemText}>{item.name}, {item.quantity}
         </Text>
       </TouchableOpacity>
     );

@@ -27,4 +27,16 @@ const DELETE_ITEM = gql`
     }
 `;
 
-export { FETCH_ITEMS, ADD_ITEM, DELETE_ITEM };
+const SUBSCRIBE = gql`
+    subscription subscribe {
+        Item {
+            node {
+                id
+                name
+                quantity
+            }
+        }
+    }
+`;
+
+export { FETCH_ITEMS, ADD_ITEM, DELETE_ITEM, SUBSCRIBE };
