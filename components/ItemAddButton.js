@@ -6,6 +6,7 @@ import { ADD_ITEM, FETCH_ITEMS } from "./queries";
 export default class ItemAddButton extends Component {
 
   addNewItem = (itemName, cb) => {
+    const { onItemAddition } = this.props;
     if (itemName !== "") {
       cb({
         variables: { name: itemName },
@@ -13,6 +14,7 @@ export default class ItemAddButton extends Component {
           query: FETCH_ITEMS
         }]
       });
+      onItemAddition();
     }
   }
 

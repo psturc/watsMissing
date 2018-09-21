@@ -6,27 +6,29 @@ import { FETCH_ITEMS, DELETE_ITEM } from "./queries";
 
 export default class EditingItem extends Component {
   deleteItem = (itemId, mutation) => {
+    const { onItemDeletion } = this.props;
     mutation({
       variables: { id: itemId },
       refetchQueries: [{
         query: FETCH_ITEMS
       }]
     });
-    this.props.onItemDeletion();
+    onItemDeletion();
   }
 
   render() {
+    const { itemToEdit } = this.props;
     return (
       <View style={styles.wrapper}>
         <TouchableOpacity style={styles.item}>
           <Text style={styles.itemName}>
-            {this.props.itemToEdit.name}
+            {itemToEdit.name}
           </Text>
         </TouchableOpacity>
         <Mutation mutation={DELETE_ITEM}>
           {(mutation) => (
             <TouchableOpacity
-              onPress={ () => { this.deleteItem(this.props.itemToEdit.id, mutation); } }
+              onPress={ () => { this.deleteItem(itemToEdit.id, mutation); } }
               style={styles.deleteButton}
             >
               <Text style={styles.deleteButtonText}>DELETE</Text>

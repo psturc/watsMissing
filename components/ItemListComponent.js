@@ -44,6 +44,12 @@ export default class ItemListComponent extends Component {
     });
   }
 
+  onItemAddition = () => {
+    this.setState({
+      newItemText: null
+    });
+  }
+
   render() {
     const { fetchedData, newItemText, itemToEdit } = this.state;
     return (
@@ -58,7 +64,10 @@ export default class ItemListComponent extends Component {
           placeholder="Enter item name"
           underlineColorAndroid="transparent"
         />
-        <ItemAddButton itemName={newItemText}/>
+        <ItemAddButton
+          itemName={newItemText}
+          onItemAddition={this.onItemAddition}
+        />
         {
           itemToEdit ?
             <EditingItem
