@@ -13,6 +13,17 @@ const FETCH_ITEMS = gql`
 const ADD_ITEM = gql`
     mutation add_item($name: String!) {
         createItem(name: $name, quantity: 1) {
+            id
+            name
+            quantity
+        }
+    }
+`;
+
+const UPDATE_ITEM = gql`
+    mutation update_item($id: ID!, $name: String!, $quantity: Int!) {
+        updateItem(id: $id, name: $name, quantity: $quantity) {
+            id
             name
             quantity
         }
@@ -39,4 +50,4 @@ const SUBSCRIBE = gql`
     }
 `;
 
-export { FETCH_ITEMS, ADD_ITEM, DELETE_ITEM, SUBSCRIBE };
+export { FETCH_ITEMS, ADD_ITEM, UPDATE_ITEM, DELETE_ITEM, SUBSCRIBE };

@@ -1,14 +1,14 @@
 import React, { Component } from "react";
-import { Button, View, StyleSheet } from "react-native";
+import { Button, View } from "react-native";
 import { Mutation } from "react-apollo";
-import { ADD_ITEM, FETCH_ITEMS } from "./queries";
+import { ADD_ITEM, UPDATE_ITEM, FETCH_ITEMS } from "./queries";
 
 export default class ItemAddButton extends Component {
 
-  addNewItem = (itemName, cb) => {
+  addNewItem = (itemName, mutate) => {
     const { onItemAddition } = this.props;
-    if (itemName !== "") {
-      cb({
+    if (itemName) {
+      mutate({
         variables: { name: itemName },
         refetchQueries: [{
           query: FETCH_ITEMS
@@ -16,24 +16,43 @@ export default class ItemAddButton extends Component {
       });
       onItemAddition();
     }
+  };
+
+  updateItem = (item, mutate) => {
+    const { onItemAddition } = this.props;
+    mutate({
+      variables: { name: item.name, id: item.id, quantity: item.quantity + 1 },
+      refetchQueries: [{
+        query: FETCH_ITEMS
+      }]
+    });
+    onItemAddition();
+  };
+
+  itemNameExists = (items, searchedItemName) => {
+    return items.find((item) => item.name === searchedItemName);
   }
 
   render() {
-    const { itemName } = this.props;
+    const { itemName, fetchedItems } = this.props;
+    const itemToUpdate = this.itemNameExists(fetchedItems, itemName);
+
     return (
-      <Mutation mutation={ADD_ITEM}>
-        {(mutation) => (
-          <View style={styles.buttonWrapper}>
-            <Button title='Add new Item' onPress={() => this.addNewItem(itemName, mutation)}/>
-          </View>
-        )}
-      </Mutation>
+      itemToUpdate ?
+        <Mutation mutation={UPDATE_ITEM}>
+          {(mutate) => (
+            <View>
+              <Button title='Update Item' onPress={() => this.updateItem(itemToUpdate, mutate)}/>
+            </View>
+          )}
+        </Mutation> :
+        <Mutation mutation={ADD_ITEM}>
+          {(mutate) => (
+            <View>
+              <Button title='Add new Item' onPress={() => this.addNewItem(itemName, mutate)}/>
+            </View>
+          )}
+        </Mutation>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  buttonWrapper: {
-    
-  }  
-});

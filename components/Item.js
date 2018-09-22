@@ -15,7 +15,7 @@ export default class Item extends Component {
         style={styles.item}
       >
         <Text 
-          style={styles.itemText}>{item.name}, {item.quantity}
+          style={styles.itemText}>{item.quantity}x {item.name}
         </Text>
       </TouchableOpacity>
     );

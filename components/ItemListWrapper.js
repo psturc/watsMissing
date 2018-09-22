@@ -19,7 +19,7 @@ export default class ItemListWrapper extends Component {
             if (error) {
               return <Text>error.message</Text>;
             }
-            return <ItemListComponent fetchedData={data.allItems}/>;
+            return <ItemListComponent fetchedItems={data.allItems}/>;
           }}
         </Query>
       </View>

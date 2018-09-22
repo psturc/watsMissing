@@ -10,20 +10,30 @@ export default class ItemListComponent extends Component {
 
   constructor(props) {
     super(props);
-    const { fetchedData } = this.props;
 
     this.state = {
       newItemText: "",
       itemToEdit: null,
-      fetchedData
     };
   }
 
-  componentDidUpdate(prevProps) {
-    const { fetchedData } = this.props;
-    if (fetchedData.length !== prevProps.fetchedData.length) {
-      this.setState({ fetchedData: fetchedData });
+  componentDidUpdate() {
+    const { itemToEdit } = this.state;
+    const { fetchedItems } = this.props;
+
+    if (itemToEdit) {
+      const changedItem = fetchedItems.find((item) => 
+        item.id === itemToEdit.id && item.quantity !== itemToEdit.quantity
+      );
+      if (changedItem) {
+        this.setState({ itemToEdit: changedItem });
+      }
+      
     }
+  }
+
+  selectedItemDidChange = () => {
+
   }
 
   handleNewItemTextChange = (newItemText) => {
@@ -51,7 +61,8 @@ export default class ItemListComponent extends Component {
   }
 
   render() {
-    const { fetchedData, newItemText, itemToEdit } = this.state;
+    const { newItemText, itemToEdit } = this.state;
+    const { fetchedItems } = this.props;
     return (
       <View style={styles.wrapper}>
         <View style={styles.header}>
@@ -66,17 +77,19 @@ export default class ItemListComponent extends Component {
         />
         <ItemAddButton
           itemName={newItemText}
+          fetchedItems={fetchedItems}
           onItemAddition={this.onItemAddition}
         />
         {
           itemToEdit ?
             <EditingItem
               onItemDeletion={this.onItemDeletion}
+              onItemAddition={this.onItemAddition}
               itemToEdit={itemToEdit}
             /> : null
         }
         <FlatList
-          data={fetchedData}
+          data={fetchedItems}
           keyExtractor={(item) => item.id}
           renderItem={({item}) =>
             <Item
