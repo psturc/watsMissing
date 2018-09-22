@@ -1,12 +1,14 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Query } from "react-apollo";
 
-import LoadingScreen from "./LoadingScreen";
+import StatusScreen from "./StatusScreen";
 import ItemListComponent from "./ItemListComponent";
 import { FETCH_ITEMS } from "./queries";
 
 export default class ItemListWrapper extends Component {
+
+  offlineData = null;
   
   render() {
     return (
@@ -14,12 +16,17 @@ export default class ItemListWrapper extends Component {
         <Query query={FETCH_ITEMS} pollInterval={5000}>
           {({ loading, error, data }) => {
             if (loading) {
-              return <LoadingScreen/>;
+              return <StatusScreen message='Loading'/>;
             }
-            if (error) {
-              return <Text>error.message</Text>;
+            if (!error) {
+              this.offlineData = data.allItems;
+              return <ItemListComponent fetchedItems={this.offlineData}/>;
             }
-            return <ItemListComponent fetchedItems={data.allItems}/>;
+            if (this.offlineData) {
+              return <ItemListComponent fetchedItems={this.offlineData} networkProblems={true}/>;
+            }
+            return <StatusScreen message={error.message}/>;
+            
           }}
         </Query>
       </View>

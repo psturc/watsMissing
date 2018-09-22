@@ -2,25 +2,51 @@ import React, { Component } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Mutation } from "react-apollo";
 
-import { FETCH_ITEMS,
-  //DELETE_ITEM,
-  UPDATE_ITEM } from "./queries";
+import {
+  FETCH_ITEMS,
+  UPDATE_ITEM,
+  DELETE_ITEM
+} from "./queries";
 
 export default class EditingItem extends Component {
-  // deleteItem = (itemId, mutation) => {
-  //   const { onItemDeletion } = this.props;
-  //   mutation({
-  //     variables: { id: itemId },
-  //     refetchQueries: [{
-  //       query: FETCH_ITEMS
-  //     }]
-  //   });
-  //   onItemDeletion();
-  // }
+
+  state = {
+    touchableItemStyle: styles.item
+  }
+
+  deleteItemOnDoublePress = (itemId, mutate) => {
+    if (this.wasDoublePressed()) {
+      const { onItemDeletion } = this.props;
+      mutate({
+        variables: { id: itemId },
+        refetchQueries: [{
+          query: FETCH_ITEMS
+        }]
+      });
+      onItemDeletion();
+    }
+  };
+
+  wasDoublePressed = () => {
+    this.setState({touchableItemStyle: styles.itemPressed});
+    setTimeout(() => {
+      this.setState({touchableItemStyle: styles.item});
+    },500);
+    const time = new Date().getTime();
+    const delta = time - this.lastPress;
+
+    const DOUBLE_PRESS_DELAY = 500;
+    if (delta < DOUBLE_PRESS_DELAY) {
+      return true;
+    }
+    this.lastPress = time;
+    return false;
+
+  }
 
   updateItemQuantity = (item, mutate, value) => {
     const { onItemAddition } = this.props;
-    const quantity = item.quantity + value < 0 ? item.quantity : item.quantity + value;
+    const quantity = item.quantity + value < 1 ? item.quantity : item.quantity + value;
     mutate({
       variables: { name: item.name, id: item.id, quantity: quantity },
       refetchQueries: [{
@@ -32,13 +58,20 @@ export default class EditingItem extends Component {
 
   render() {
     const { itemToEdit } = this.props;
+    const { touchableItemStyle } = this.state;
     return (
       <View style={styles.wrapper}>
-        <TouchableOpacity style={styles.item}>
-          <Text style={styles.itemName}>
-            {itemToEdit.quantity}x {itemToEdit.name}
-          </Text>
-        </TouchableOpacity>
+        <Mutation mutation={DELETE_ITEM}>
+          {(mutation) => (
+            <TouchableOpacity
+              onPress={() => { this.deleteItemOnDoublePress(itemToEdit.id, mutation); } }
+              style={touchableItemStyle}>
+              <Text style={styles.itemName}>
+                {itemToEdit.quantity}x {itemToEdit.name}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </Mutation>
         <Mutation mutation={UPDATE_ITEM}>
           {(mutation) => (
             <TouchableOpacity
@@ -78,6 +111,13 @@ const styles = StyleSheet.create({
     flex: 4,
     justifyContent: "center",
     alignItems: "center"
+  },
+  itemPressed: {
+    height: 60,
+    flex: 4,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#DD000044"
   },
   itemName: {
     fontSize: 20,

@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
+import { FlatList, StyleSheet, TextInput, View } from "react-native";
 
 import Item from "./Item";
 import ItemAddButton from "./ItemAddButton";
 
 import EditingItem from "./EditingItem";
+import AppHeader from "./AppHeader";
 
 export default class ItemListComponent extends Component {
 
@@ -28,7 +29,6 @@ export default class ItemListComponent extends Component {
       if (changedItem) {
         this.setState({ itemToEdit: changedItem });
       }
-      
     }
   }
 
@@ -62,12 +62,10 @@ export default class ItemListComponent extends Component {
 
   render() {
     const { newItemText, itemToEdit } = this.state;
-    const { fetchedItems } = this.props;
+    const { fetchedItems, networkProblems } = this.props;
     return (
       <View style={styles.wrapper}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>WATS MISSING?</Text>
-        </View>
+        <AppHeader networkProblems={networkProblems}/>
         <TextInput
           style={styles.newItemInput}
           onChangeText={this.handleNewItemTextChange}
@@ -106,14 +104,6 @@ export default class ItemListComponent extends Component {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingTop: 20,
-    backgroundColor: "#4282d7"
-  },
-  headerText: {
-    textAlign: "center",
-    fontSize: 30,
-  },
   newItemInput: {
     margin: 15,
     height: 40,
